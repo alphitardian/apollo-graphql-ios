@@ -1,0 +1,32 @@
+//
+//  AuthorizationInterceptor.swift
+//  RocketReserver
+//
+//  Created by Ardian Pramudya Alphita on 28/05/23.
+//
+
+import Foundation
+import Apollo
+import ApolloAPI
+import KeychainSwift
+
+class AuthorizationInterceptor: ApolloInterceptor {
+    
+    func interceptAsync<Operation>(
+        chain: RequestChain,
+        request: HTTPRequest<Operation>,
+        response: HTTPResponse<Operation>?,
+        completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
+    ) where Operation : GraphQLOperation {
+        // TODO
+        let keychain = KeychainSwift()
+        if let token = keychain.get(LoginView.loginKeychainKey) {
+            request.addHeader(name: "Authorization", value: token)
+        }
+
+        chain.proceedAsync(request: request,
+                           response: response,
+                           completion: completion)
+    }
+    
+}
